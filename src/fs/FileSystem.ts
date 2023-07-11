@@ -885,11 +885,11 @@ export class FileSystem {
         let ratio: number;
         if (needToFitWidth) {
             ratio = width / originalWidth;
-            height = Math.floor(originalHeight * ratio);
+            height = Math.max(1, Math.floor(originalHeight * ratio));
         }
         else if (needToFitHeight) {
             ratio = height / originalHeight;
-            width = Math.floor(originalWidth * ratio);
+            width = Math.max(1, Math.floor(originalWidth * ratio));
         }
 
         let resizedImage = image.resize(width, height);
@@ -931,7 +931,7 @@ export class FileSystem {
     public reqGetVersion(req: FlmngrRequest, framework: string): any {
         return {
             version: "5",
-            build: "1",
+            build: "2",
             language: "node",
             framework: framework || "custom",
             storage: this.driverFiles.getDriverName(),

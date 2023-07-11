@@ -173,20 +173,20 @@ export class CachedFile {
             let originalRatio = originalWidth / originalHeight;
 
             if (previewWidth == null) {
-                previewWidth = Math.floor(originalRatio * previewHeight);
+                previewWidth = Math.max(1, Math.floor(originalRatio * previewHeight));
             }
             else {
                 if (previewHeight === null) {
-                    previewHeight = Math.floor((1 / originalRatio) * previewWidth);
+                    previewHeight = Math.max(1, Math.floor((1 / originalRatio) * previewWidth));
                 }
             }
 
             let previewRatio = previewWidth / previewHeight;
 
             if (originalRatio >= previewRatio) {
-                previewHeight = Math.floor(originalHeight * previewWidth / originalWidth);
+                previewHeight = Math.max(1, Math.floor(originalHeight * previewWidth / originalWidth));
             } else {
-                previewWidth = Math.floor(originalWidth * previewHeight / originalHeight);
+                previewWidth = Math.max(1, Math.floor(originalWidth * previewHeight / originalHeight));
             }
 
             image = image.resize(previewWidth, previewHeight);
