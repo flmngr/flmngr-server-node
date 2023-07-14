@@ -748,6 +748,11 @@ export class FileSystem {
         return result;
     }
 
+    // Legacy request used in V1 client only
+    public async reqResizeFile(request: FlmngrRequest): Promise<string> {
+        return (await this.reqResizeFile2(request)).url;
+    }
+
     // mode:
     // "ALWAYS"
     // To recreate image preview in any case (even it is already generated before)
@@ -763,7 +768,11 @@ export class FileSystem {
 
     // File uploaded / saved in image editor and reuploaded: `mode` is "ALWAYS" for required formats, "IF_EXISTS" for the others
     // User selected image in file manager:                  `mode` is "DO_NOT_UPDATE" for required formats and there is no requests for the otheres
-    public async reqResizeFile(request: FlmngrRequest): Promise<string> {
+    public async reqResizeFile2(request: FlmngrRequest): Promise<{
+        url: string,
+        width: number,
+        height: number
+    }> {
         // `filePath` here starts with "/", not with "/root_dir" as usual
         // so there will be no getRelativePath call
         let filePath = request.getParameterString("f");
@@ -798,6 +807,13 @@ export class FileSystem {
         let oldFileNameWithExt = filePath.substr(index + 1);
         let newExt = "png";
         let oldExt = Utils.getExt(filePath).toLowerCase();
+        if (oldExt === "svg") {
+            return {
+                url: filePath,
+                width: -1,
+                height: -1
+            };
+        }
         if (oldExt === "jpg" || oldExt === "jpeg") {
             newExt = "jpg";
         }
@@ -823,7 +839,16 @@ export class FileSystem {
         }
 
         if (mode === 'DO_NOT_UPDATE' && isDstPathExists) {
-            return dstPath;
+            // TODO: a preview is not needed, only a resolution
+            let info = this.getCachedImagePreviewAndResolution(
+                dstPath,
+                this.driverFiles.get(dstPath)
+            );
+            return {
+                url: dstPath,
+                width: info[1],
+                height: info[2]
+            };
         }
 
         let contents: Buffer = this.driverFiles.get(filePath);
@@ -875,7 +900,17 @@ export class FileSystem {
                 newFileNameWithoutExt + "." + oldExt === oldFileNameWithExt
             ) {
                 // return old file due to it has correct width/height to be used as a preview
-                return filePath;
+
+                // TODO: a preview is not needed, only a resolution
+                let info = this.getCachedImagePreviewAndResolution(
+                    filePath,
+                    this.driverFiles.get(filePath)
+                );
+                return {
+                    url: filePath,
+                    width: info[1],
+                    height: info[2]
+                };
             } else {
                 width = originalWidth;
                 height = originalHeight;
@@ -899,7 +934,11 @@ export class FileSystem {
             await resizedImage.toFormat(newExt as any).toBuffer() // newExt must be a key of FormatEnum
         );
 
-        return dstPath;
+        return {
+            url: dstPath,
+            width: width,
+            height: height
+        };
     }
 
     public reqGetImageOriginal(request: FlmngrRequest): {

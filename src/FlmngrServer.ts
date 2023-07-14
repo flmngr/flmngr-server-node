@@ -97,6 +97,9 @@ export class FlmngrServer {
                 case "fileMove":
                     fileSystem.reqMoveFiles(config.request);
                     break;
+                case "fileResize2":
+                    data = await fileSystem.reqResizeFile2(config.request);
+                    break;
                 case "fileResize":
                     data = await fileSystem.reqResizeFile(config.request);
                     break;
