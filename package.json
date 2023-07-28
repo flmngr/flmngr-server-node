@@ -57,8 +57,8 @@
       }
     }
   },
-  "engines" : {
-    "node" : ">=14.15.0"
+  "engines": {
+    "node": ">=14.15.0"
   },
   "types": "./dist/cjs/index.d.ts",
   "main": "./dist/cjs/index.js"

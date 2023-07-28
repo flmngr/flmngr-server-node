@@ -840,14 +840,14 @@ export class FileSystem {
 
         if (mode === 'DO_NOT_UPDATE' && isDstPathExists) {
             // TODO: a preview is not needed, only a resolution
-            let info = this.getCachedImagePreviewAndResolution(
+            let info = await this.getCachedImagePreviewAndResolution(
                 dstPath,
                 this.driverFiles.get(dstPath)
             );
             return {
                 url: dstPath,
-                width: info[1],
-                height: info[2]
+                width: info.width,
+                height: info.height
             };
         }
 
@@ -902,14 +902,14 @@ export class FileSystem {
                 // return old file due to it has correct width/height to be used as a preview
 
                 // TODO: a preview is not needed, only a resolution
-                let info = this.getCachedImagePreviewAndResolution(
+                let info = await this.getCachedImagePreviewAndResolution(
                     filePath,
                     this.driverFiles.get(filePath)
                 );
                 return {
                     url: filePath,
-                    width: info[1],
-                    height: info[2]
+                    width: info.width,
+                    height: info.height
                 };
             } else {
                 width = originalWidth;
