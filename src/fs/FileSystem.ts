@@ -969,8 +969,8 @@ export class FileSystem {
 
     public reqGetVersion(req: FlmngrRequest, framework: string): any {
         return {
-            version: "5",
-            build: "2",
+            version: "6",
+            build: "3",
             language: "node",
             framework: framework || "custom",
             storage: this.driverFiles.getDriverName(),
